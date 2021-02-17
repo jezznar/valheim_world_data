@@ -1,0 +1,40 @@
+#!/bin/bash
+SERVERNAME='"WowoweeBoyz!"'
+SERVERPASSWORD='"boomtarat"'
+WORLDNAME='"WowillieStudio"'
+
+echo "Updating DISTRO"
+yum update -y
+
+echo "Installing Essential Stuff"
+yum install -y git net-tools screen
+yum install -y glibc.i686 libstdc++.i686
+
+echo "Creating user: steam"
+useradd -m steam
+mkdir /home/steam/Downloads || true
+cd /home/steam/Downloads
+
+echo "Downloading steamcmd"
+wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz
+tar xf steamcmd_linux.tar.gz
+
+echo "Downloading Valheim server"
+chmod a+rwx steamcmd.sh
+/home/steam/Downloads/steamcmd.sh +login anonymous +force_install_dir /home/steam/valheimserver +app_update 896660 validate +exit
+
+touch /home/steam/valheimserver/BOOMTARAT.sh
+cat > /home/steam/valheimserver/BOOMTARAT.sh <<EOF
+./valheim_server.x86_64 -name $SERVERNAME -port 2456 -nographics -batchmode -world $WORLDNAME -password $SERVERPASSWORD
+EOF
+
+echo "Setting Firewall exemptions"
+firewall-cmd --zone=public --permanent --add-port=2456/tcp
+firewall-cmd --zone=public --permanent --add-port=2456/udp
+firewall-cmd --zone=public --permanent --add-port=2457/tcp
+firewall-cmd --zone=public --permanent --add-port=2457/udp
+firewall-cmd --zone=public --permanent --add-port=2458/tcp
+firewall-cmd --zone=public --permanent --add-port=2458/udp
+firewall-cmd --reload
+
+echo "START THE SERVER via /home/steam/valheimserver/BOOMTARAT.sh"
