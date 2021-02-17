@@ -1,0 +1,11 @@
+#!/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+WORLDS_DIR=/root/.config/unity3d/IronGate/Valheim/worlds
+COMMIT_MSG=`date`
+HOME=/
+
+cd $WORLDS_DIR
+/bin/echo $COMMIT_MSG > $WORLDS_DIR/LAST_SAVE
+/bin/git add --all .
+/bin/git commit -m "${COMMIT_MSG}"
+/bin/git push origin master -f
